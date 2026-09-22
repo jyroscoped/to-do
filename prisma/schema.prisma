@@ -1,26 +1,180 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
 
-enum Role { ADMIN MEMBER }
-enum TaskStatus { OPEN IN_PROGRESS BLOCKED COMPLETED }
-enum Priority { URGENT HIGH MEDIUM LOW }
-enum EstimateSource { AI HEURISTIC MANUAL }
-enum EstimateStatus { PENDING READY FAILED }
-enum ActivityType { CREATED UPDATED STATUS_CHANGED ESTIMATED ESTIMATE_OVERRIDDEN COMMENTED ASSIGNED }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  BLOCKED
+  COMPLETED
+}
+enum Priority {
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+}
+enum EstimateSource {
+  AI
+  HEURISTIC
+  MANUAL
+}
+enum EstimateStatus {
+  PENDING
+  READY
+  FAILED
+}
+enum ActivityType {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  ESTIMATED
+  ESTIMATE_OVERRIDDEN
+  COMMENTED
+  ASSIGNED
+}
 
 model User {
-  id String @id @default(cuid()); name String?; email String @unique; image String?; role Role @default(MEMBER); active Boolean @default(true); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt
-  createdTasks Task[] @relation("CreatedBy"); assignedTasks Task[] @relation("Assignee"); completedTasks Task[] @relation("CompletedBy"); comments Comment[]; sessions WorkSession[]; activities ActivityLog[]; attachments Attachment[]
+  id String @id @default(cuid())
+  name String?
+  email String @unique
+  image String?
+  role Role @default(MEMBER)
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdTasks Task[] @relation("CreatedBy")
+  assignedTasks Task[] @relation("Assignee")
+  completedTasks Task[] @relation("CompletedBy")
+  comments Comment[]
+  sessions WorkSession[]
+  activities ActivityLog[]
+  attachments Attachment[]
 }
-model Category { id String @id @default(cuid()); name String @unique; color String; icon String; sortOrder Int @default(0); createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; tasks Task[]; calibration CalibrationStat? }
+
+model Category {
+  id String @id @default(cuid())
+  name String @unique
+  color String
+  icon String
+  sortOrder Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tasks Task[]
+  calibration CalibrationStat?
+}
+
 model Task {
-  id String @id @default(cuid()); title String; description String @default(""); location String?; status TaskStatus @default(OPEN); priority Priority @default(MEDIUM); deadline DateTime?; categoryId String?; createdById String; assigneeId String?; completedById String?; estimatedMinutes Int?; estimateSource EstimateSource @default(HEURISTIC); estimateConfidence Float @default(0.35); estimateRationale String?; estimateStatus EstimateStatus @default(PENDING); actualMinutes Int?; startedAt DateTime?; completedAt DateTime?; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt
-  category Category? @relation(fields:[categoryId],references:[id]); createdBy User @relation("CreatedBy",fields:[createdById],references:[id]); assignee User? @relation("Assignee",fields:[assigneeId],references:[id]); completedBy User? @relation("CompletedBy",fields:[completedById],references:[id]); sessions WorkSession[]; comments Comment[]; attachments Attachment[]; activities ActivityLog[]
-  @@index([status,priority,deadline]); @@index([assigneeId,status]); @@index([completedAt])
+  id String @id @default(cuid())
+  title String
+  description String @default("")
+  location String?
+  status TaskStatus @default(OPEN)
+  priority Priority @default(MEDIUM)
+  deadline DateTime?
+  categoryId String?
+  createdById String
+  assigneeId String?
+  completedById String?
+  estimatedMinutes Int?
+  estimateSource EstimateSource @default(HEURISTIC)
+  estimateConfidence Float @default(0.35)
+  estimateRationale String?
+  estimateStatus EstimateStatus @default(PENDING)
+  actualMinutes Int?
+  startedAt DateTime?
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  category Category? @relation(fields: [categoryId], references: [id])
+  createdBy User @relation("CreatedBy", fields: [createdById], references: [id])
+  assignee User? @relation("Assignee", fields: [assigneeId], references: [id])
+  completedBy User? @relation("CompletedBy", fields: [completedById], references: [id])
+  sessions WorkSession[]
+  comments Comment[]
+  attachments Attachment[]
+  activities ActivityLog[]
+  @@index([status, priority, deadline])
+  @@index([assigneeId, status])
+  @@index([completedAt])
 }
-model WorkSession { id String @id @default(cuid()); taskId String; userId String; startedAt DateTime @default(now()); endedAt DateTime?; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; task Task @relation(fields:[taskId],references:[id],onDelete:Cascade); user User @relation(fields:[userId],references:[id]) }
-model Comment { id String @id @default(cuid()); taskId String; authorId String?; body String; isSystem Boolean @default(false); editedAt DateTime?; deletedAt DateTime?; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; task Task @relation(fields:[taskId],references:[id],onDelete:Cascade); author User? @relation(fields:[authorId],references:[id]); attachments Attachment[] }
-model Attachment { id String @id @default(cuid()); taskId String; commentId String?; uploaderId String; url String; mimeType String; sizeBytes Int; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; task Task @relation(fields:[taskId],references:[id],onDelete:Cascade); comment Comment? @relation(fields:[commentId],references:[id]); uploader User @relation(fields:[uploaderId],references:[id]) }
-model ActivityLog { id String @id @default(cuid()); taskId String; actorId String; type ActivityType; payload Json; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; task Task @relation(fields:[taskId],references:[id],onDelete:Cascade); actor User @relation(fields:[actorId],references:[id]) }
-model CalibrationStat { id String @id @default(cuid()); categoryId String? @unique; sampleCount Int @default(0); medianRatio Float @default(1); updatedAt DateTime @updatedAt; createdAt DateTime @default(now()); category Category? @relation(fields:[categoryId],references:[id]) }
-model Setting { key String @id; value Json; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt }
+
+model WorkSession {
+  id String @id @default(cuid())
+  taskId String
+  userId String
+  startedAt DateTime @default(now())
+  endedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id String @id @default(cuid())
+  taskId String
+  authorId String?
+  body String
+  isSystem Boolean @default(false)
+  editedAt DateTime?
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  author User? @relation(fields: [authorId], references: [id])
+  attachments Attachment[]
+}
+
+model Attachment {
+  id String @id @default(cuid())
+  taskId String
+  commentId String?
+  uploaderId String
+  url String
+  mimeType String
+  sizeBytes Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [commentId], references: [id])
+  uploader User @relation(fields: [uploaderId], references: [id])
+}
+
+model ActivityLog {
+  id String @id @default(cuid())
+  taskId String
+  actorId String
+  type ActivityType
+  payload Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  actor User @relation(fields: [actorId], references: [id])
+}
+
+model CalibrationStat {
+  id String @id @default(cuid())
+  categoryId String? @unique
+  sampleCount Int @default(0)
+  medianRatio Float @default(1)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  category Category? @relation(fields: [categoryId], references: [id])
+}
+
+model Setting {
+  key String @id
+  value Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
