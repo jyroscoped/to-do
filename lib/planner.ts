@@ -1,0 +1,2 @@
+import {sortUrgency,SortTask} from "./urgency";
+export function plan<T extends SortTask>(tasks:T[],availableMinutes:number){const sorted=sortUrgency(tasks).filter(t=>t.estimatedMinutes);const picked:T[]=[];let total=0;for(const t of sorted){const m=t.estimatedMinutes!;if(total+m<=availableMinutes){picked.push(t);total+=m}} return {tasks:picked,totalMinutes:total,percent:availableMinutes?Math.round(total/availableMinutes*100):0};}
