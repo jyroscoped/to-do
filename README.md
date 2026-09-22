@@ -1,6 +1,6 @@
 # OfficeOps
 
-Phone-first shared task board for physical office operations. It supports task triage, estimation, state transitions, completion history, and time-boxed planning.
+OfficeOps is now a static, phone-first task board. [Open `index.html`](./index.html) in any browser or publish the repository root with GitHub Pages. No server, database, Node runtime, or environment variables are needed for the deployed app; data stays in each visitor's browser via `localStorage`.
 
 ## Run locally
 
