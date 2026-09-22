@@ -4,6 +4,8 @@ Phone-first shared task board for physical office operations. It supports task t
 
 ## Run locally
 
+This workspace includes a local Node runtime in `.tools`. If Node is not installed globally, run `export PATH="$PWD/.tools/bin:$PATH"` once from the project directory before using the commands below.
+
 1. `cp .env.example .env`
 2. `docker compose up -d db`
 3. `npm install`
