@@ -18,12 +18,16 @@ test("the static mobile board can create a task", async ({ page }) => {
 });
 
 // Stands in for the Google Apps Script Web App described in instructions.md.
-async function mockAppsScript(page: Page, store: { state: unknown }, key = "shared-sync-key-123") {
+async function mockAppsScript(page: Page, store: { state: unknown }, key = "shared-sync-key-123", legacy = false) {
   await page.route("https://sync.example.test/**", async (route) => {
     const request = route.request();
     if (request.method() === "POST") {
       const body = JSON.parse(request.postData() || "{}");
-      if (body.token === key && body.action === "saveState") store.state = body.state;
+      if (body.token === key && body.action === "saveState") {
+        // Scripts deployed before the rev field existed store only the board fields.
+        const { tasks, timeEntries, activeTimer } = body.state;
+        store.state = legacy ? { tasks, timeEntries, activeTimer } : body.state;
+      }
       return route.fulfill({ status: 200, body: "{}" });
     }
     const params = new URL(request.url()).searchParams;
@@ -78,4 +82,25 @@ test("a wrong sync key never overwrites the shared board", async ({ page }) => {
   await connect(page, "wrong-key-000000000");
   await expect(page.getByText("Google Sheets rejected the sync key.", { exact: false })).toBeVisible();
   expect(store.state).toEqual({ tasks: [], timeEntries: [], activeTimer: null, rev: "x" });
+});
+
+test("completing a task on one device updates an open page on another", async ({ browser }) => {
+  const store: { state: unknown } = { state: null };
+  const pages = [];
+  for (let i = 0; i < 2; i++) {
+    const page = await (await browser.newContext({ viewport: { width: 375, height: 812 } })).newPage();
+    await mockAppsScript(page, store, undefined, true);
+    await page.goto("/");
+    await connect(page);
+    await expect(page.getByText("Synced with Google Sheets.")).toBeVisible();
+    pages.push(page);
+  }
+  const [first, second] = pages;
+  await expect(second.locator("#tasks").getByText("Build TV stand for lobby")).toBeVisible();
+  await first.getByRole("button", { name: "Complete Build TV stand for lobby" }).click();
+  await expect.poll(() => JSON.stringify(store.state)).toContain("COMPLETED");
+  await expect(first.getByText("Synced with Google Sheets.")).toBeVisible();
+
+  await second.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
+  await expect(second.locator("#tasks").getByText("Build TV stand for lobby")).toHaveCount(0);
 });

@@ -204,7 +204,7 @@ On the first computer you connect, the board in that browser is uploaded to the 
 
 Repeat step 6 on each device with the **same URL and sync key**. Once connected, a device loads the shared board from Google Sheets and **replaces** whatever was in its own browser.
 
-Each device remembers its connection. The board reloads from Google Sheets when you open the page or switch back to its tab.
+Each device remembers its connection. The board reloads from Google Sheets when you open the page, when you switch back to its tab, and every 20 seconds while it is open.
 
 ---
 
@@ -239,7 +239,7 @@ If you set up an earlier version of this script, which stored the board in Scrip
 
 - **"Cannot reach Google Sheets" on every device.** Check that the URL ends in `/exec`, not `/dev`, and that **Who has access** is **Anyone**. Opening the URL in a browser should show `{"ok":false,"error":"Unauthorized"}`.
 - **"Rejected the sync key."** Keys are case-sensitive and must be at least 16 characters. Re-enter the key under **Google Sheets**.
-- **Changes don't appear on the other device.** Reload the page or switch back to the tab. OfficeOps does not push live updates.
+- **Changes don't appear on the other device.** Open pages check for changes every 20 seconds and when you switch back to the tab. If nothing changes, confirm both devices show **Synced with Google Sheets** and use the same URL and key.
 - **Two people edited at the same time.** The last save wins, so avoid editing the same board on two devices at once.
 - **Backups.** Use **File → Version history** in Google Sheets to restore an earlier state of the spreadsheet.
 

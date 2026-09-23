@@ -27,4 +27,4 @@ All requests carry the shared sync key as `token`. The script rejects every requ
 - Because no-cors POST responses are opaque, each save sends a random `rev`. The client then reloads remote state and shows **Synced** only when the stored `rev` matches.
 - The client does not push until a remote load has succeeded. This keeps a device that is offline, or has a bad key, from overwriting the shared board.
 - When a device connects, or reloads with no pending edits, remote state replaces local state. If the remote store is empty, local state is uploaded. Unconfirmed local edits (`pendingSync`) take priority on the next successful load.
-- Remote state is reloaded when the page opens and whenever the tab becomes visible. Saves are last-write-wins.
+- Remote state is reloaded when the page opens, when the tab becomes visible, and every 20 seconds while it is visible. A save counts as confirmed when the stored `rev` or the stored board content matches, so scripts deployed before `rev` existed still verify. Saves are last-write-wins.
