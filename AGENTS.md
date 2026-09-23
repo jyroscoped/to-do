@@ -18,7 +18,7 @@ OfficeOps is a phone-first shared office task board with task planning and time 
 1. `localStorage` key `officeops-state-v2` is an offline cache for tasks, time entries, an active timer, and connector settings.
 2. An optional Google Apps Script Web App is the durable, shared store. Once configured under **Google Sheets**, the app loads remote state on page open and pushes state after changes.
 
-The Apps Script connector also appends completed sessions to a Sheet. Its current setup, production-ready script, sync-key requirement, and deployment steps are in `GOOGLE_SHEETS.md`.
+The Apps Script connector also appends completed sessions to a Sheet. Setup steps and the production-ready script are in `instructions.md`. The client-to-script protocol and sync rules are in `GOOGLE_SHEETS.md`.
 
 The static client writes state with a no-CORS POST and reads it with JSONP. Keep this design unless a proper API host with CORS and authentication replaces it. The sync key must never be committed or hard-coded into `index.html`.
 
@@ -62,7 +62,7 @@ Run `npm run build` when changing TypeScript, Next.js, Prisma, package dependenc
 - Treat the Apps Script URL and sync key as credentials. Do not log them or expose them in repository files.
 - Keep the mobile viewport first-class: the target width is 375 px, and interactive controls must remain usable by touch.
 - Sanitize user content before assigning it to `innerHTML`; the existing `esc()` helper is used for task and time-log text.
-- Update `GOOGLE_SHEETS.md` whenever the client-to-script payload changes.
+- Update `GOOGLE_SHEETS.md` and the script in `instructions.md` whenever the client-to-script payload changes.
 - Do not claim server persistence is active until the user has configured their own Apps Script Web App and sync key.
 - Use `git pull --ff-only origin main` before work if the remote may have received merges or Copilot changes. Inspect the merged code rather than assuming local files are current.
 

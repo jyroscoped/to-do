@@ -2,7 +2,7 @@
 
 OfficeOps is a static, phone-first task board published from GitHub Pages. GitHub Pages has no server API or persistent filesystem, so the site uses browser storage as an offline cache and can use a Google Apps Script connector for durable, shared server-side board storage.
 
-The always-visible **Start tracking** button records work sessions as date, task, start, end, and decimal hours. Use **Download CSV** for an export, or follow [Google Sheets and durable board storage](./GOOGLE_SHEETS.md) to link the shared remote store.
+The always-visible **Start tracking** button records work sessions as date, task, start, end, and decimal hours. Use **Download CSV** for an export, or follow [instructions.md](./instructions.md) to link the shared Google Sheets store so the board persists across computers.
 
 ## Run locally
 
