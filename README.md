@@ -1,6 +1,6 @@
 # OfficeOps
 
-OfficeOps is now a static, phone-first task board. [Open `index.html`](./index.html) in any browser or publish the repository root with GitHub Pages. No server, database, Node runtime, or environment variables are needed for the deployed app; data stays in each visitor's browser via `localStorage`.
+OfficeOps is now a phone-first task board. Run it with the Next.js server so `index.html` can persist board progress through `/api/progress`, which writes to a JSON file on the server.
 
 The always-visible **Start tracking** button records work sessions as date, task, start, end, and decimal hours. Use **Download CSV** for an export, or follow [Google Sheets time-log connection](./GOOGLE_SHEETS.md) to link a sheet through your own Apps Script URL.
 
