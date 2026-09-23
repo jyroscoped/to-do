@@ -53,6 +53,8 @@ const LEGACY_STATE_KEY = 'officeops-state-v1';
 const CHUNK_SIZE = 40000;
 
 function doGet(event) {
+  // Running doGet from the editor passes no request; use testSetup there instead.
+  if (!event) throw new Error('doGet runs only when the web app URL is opened. To test, choose testSetup in the function menu and click Run.');
   const params = event.parameter || {};
   let response;
   if (!valid(params.token)) {
@@ -73,6 +75,7 @@ function doGet(event) {
 }
 
 function doPost(event) {
+  if (!event) throw new Error('doPost runs only when OfficeOps saves. To test, choose testSetup in the function menu and click Run.');
   try {
     const body = JSON.parse((event.postData && event.postData.contents) || '{}');
     if (!valid(body.token)) throw new Error('Unauthorized');
@@ -172,7 +175,7 @@ function testSetup() {
 
 ## 4. Authorize the script
 
-1. In the toolbar function menu, select **testSetup**, then click **Run**.
+1. In the function menu in the toolbar (next to **Debug**), select **testSetup**, then click **Run**. Do not run `doGet` or `doPost` from the editor; they only work when the web app is called, and they stop with an error if run directly.
 2. Google asks for permission. Click **Review permissions** and choose your account.
 3. If you see **Google hasn't verified this app**, click **Advanced**, then **Go to (project name) (unsafe)**. The warning appears because you wrote this script yourself.
 4. Click **Allow**. The execution log should say `OfficeOps storage is ready.`
@@ -237,6 +240,7 @@ If you set up an earlier version of this script, which stored the board in Scrip
 
 ## Troubleshooting
 
+- **"TypeError: Cannot read properties of undefined (reading 'parameter')"** or **"doGet runs only when the web app URL is opened."** You ran `doGet` from the editor. Choose **testSetup** in the function menu and run that instead.
 - **"Cannot reach Google Sheets" on every device.** Check that the URL ends in `/exec`, not `/dev`, and that **Who has access** is **Anyone**. Opening the URL in a browser should show `{"ok":false,"error":"Unauthorized"}`.
 - **"Rejected the sync key."** Keys are case-sensitive and must be at least 16 characters. Re-enter the key under **Google Sheets**.
 - **Changes don't appear on the other device.** Open pages check for changes every 20 seconds and when you switch back to the tab. If nothing changes, confirm both devices show **Synced with Google Sheets** and use the same URL and key.
