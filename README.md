@@ -2,6 +2,8 @@
 
 OfficeOps is now a static, phone-first task board. [Open `index.html`](./index.html) in any browser or publish the repository root with GitHub Pages. No server, database, Node runtime, or environment variables are needed for the deployed app; data stays in each visitor's browser via `localStorage`.
 
+The always-visible **Start tracking** button records work sessions as date, task, start, end, and decimal hours. Use **Download CSV** for an export, or follow [Google Sheets time-log connection](./GOOGLE_SHEETS.md) to link a sheet through your own Apps Script URL.
+
 ## Run locally
 
 This workspace includes a local Node runtime in `.tools`. If Node is not installed globally, run `export PATH="$PWD/.tools/bin:$PATH"` once from the project directory before using the commands below.
